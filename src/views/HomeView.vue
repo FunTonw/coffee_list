@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <div :class=" this.modelToggle ? 'open' : 'close' ">
+      <OrderDelModel @close-model='closeModel' @del-model='delOrder' />
+    </div>
     <div>
       <div class="bg">
         <h2 class="coffee-title">咖啡菜單</h2>
@@ -52,7 +55,7 @@
                 <p><span>{{order.sizeCheck.cup}}</span> {{order.name}} <span>{{order.count}} 杯</span></p>
                 <p>{{order.totalPrice}}元</p>
                 <div class="coffee-order-btn">
-                  <button class="del-button" @click="delOrder(key)">
+                  <button class="del-button" @click="openDelModel(key)">
                     <span>X</span>
                   </button>
                   <button class="edit-button">
@@ -79,10 +82,13 @@
   body{
     background: rgb(180, 129, 71);
   }
+  .home{
+    position: relative;
+  }
   .bg{
     background: white;
     max-width: 35%;
-    margin: 20px auto;
+    margin: 0px auto;
     padding-top: 2rem;
     padding-bottom: 2rem;
     border-radius: 0 0 1rem 1rem ;
@@ -247,12 +253,22 @@
     bottom: 25%;
     right: 50%;
   }
+  .close {
+    display: none;
+  }
 </style>
 
 <script>
+import OrderDelModel from '../components/OrderDelModel.vue'
+
 export default {
+  components: {
+    OrderDelModel
+  },
   data () {
     return {
+      modelToggle: false,
+      delOrderNumber: Number,
       order: {
         orderList: [],
         orderTotal: 0
@@ -384,9 +400,8 @@ export default {
     checkSelete: function (item) {
       const orderItem = { ...item }
       orderItem.totalPrice = this.totalPrice
-      this.order.orderList.push(orderItem)
+      this.order.orderList.unshift(orderItem)
       this.cancelSelete()
-      console.log('push')
     },
     countAddMinus: function (x) {
       if (x) {
@@ -395,8 +410,17 @@ export default {
         this.coffeeCheck.count -= 1
       }
     },
-    delOrder: function (key) {
-      alert('確定要刪除嗎?')
+    openDelModel (key) {
+      this.modelToggle = !this.modelToggle
+      this.delOrderNumber = key
+      console.log(this.delOrderNumber)
+    },
+    closeModel () {
+      this.modelToggle = !this.modelToggle
+    },
+    delOrder () {
+      this.modelToggle = !this.modelToggle
+      this.order.orderList.splice(this.delOrderNumber, 1)
     },
     cancelOrder: function () {
       this.order = {
