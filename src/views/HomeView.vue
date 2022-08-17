@@ -2,7 +2,7 @@
   <div class="home">
     <div>
       <div class="bg">
-        <h1 class="coffee-title">咖啡菜單</h1>
+        <h2 class="coffee-title">咖啡菜單</h2>
         <div class="coffee-product">
           <ul class="coffee-list">
             <li v-for="item, key in coffeeItem" :key="key">
@@ -10,7 +10,7 @@
             </li>
           </ul>
         </div>
-        <div>
+        <div class="coffee-chack">
           <div v-if="!this.coffeeCheck.name"></div>
           <div v-else>
             <div class="sizeCheck">
@@ -39,8 +39,35 @@
             </div>
             <div>
               <button @click="cancelSelete()" class="button-red">取消選擇</button>
-              <button @click="checkSelete()" class="button-green">加入訂單</button>
+              <button @click="checkSelete(this.coffeeCheck)" class="button-green">加入訂單</button>
             </div>
+          </div>
+        </div>
+        <div v-if="this.order.orderList.length <= 0"></div>
+        <div class="coffee-order" v-else>
+          <h2 class="coffee-title">訂單內容</h2>
+          <ul>
+            <li class="coffee-order-list" v-for="order, key in this.order.orderList" :key="key">
+              <div class="coffee-order-list-content">
+                <p><span>{{order.sizeCheck.cup}}</span> {{order.name}} <span>{{order.count}} 杯</span></p>
+                <p>{{order.totalPrice}}元</p>
+                <div class="coffee-order-btn">
+                  <button class="del-button" @click="delOrder(key)">
+                    <span>X</span>
+                  </button>
+                  <button class="edit-button">
+                    <span>≡</span>
+                  </button>
+                </div>
+              </div>
+              <div class="coffee-order-list-tip">
+                <p>{{order.note}}</p>
+              </div>
+            </li>
+          </ul>
+          <div>
+            <button @click="cancelOrder()" class="button-red">取消全部</button>
+            <button class="button-green">送出訂單</button>
           </div>
         </div>
       </div>
@@ -129,7 +156,10 @@
     border-radius: 1rem;
     cursor: pointer;
     color: white;
-    background: rgb(85, 85, 255);
+    background: rgb(194, 194, 255);
+  }
+  .button-green:hover{
+    background: rgb(127, 127, 255);
   }
   .button-red{
     padding: .3rem 1rem;
@@ -138,7 +168,10 @@
     border-radius: 1rem;
     cursor: pointer;
     color: white;
-    background: red;
+    background: rgb(255, 146, 146);
+  }
+  .button-red:hover{
+    background: rgb(255, 84, 84);
   }
   .coffee-tip{
     display: flex;
@@ -157,12 +190,73 @@
     border-radius: .3rem;
     padding: .5rem;
   }
+  .coffee-order{
+    margin: 2rem 1rem;
+  }
+  .coffee-order-list{
+    border-bottom: 1px solid rgb(186, 186, 186);
+    padding: 1rem;
+    margin-bottom: .5rem;
+  }
+  .coffee-order-list .coffee-order-list-content{
+    display: flex;
+    justify-content: space-between;
+  }
+  .coffee-order-list .coffee-order-list-tip{
+    text-align: start;
+    font-size: 12px;
+    margin-top: .6rem;
+  }
+  .coffee-order-btn{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 1rem;
+  }
+  .del-button{
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    padding: 1rem;
+    border: none;
+    border-radius: 50%;
+    background: rgb(255, 146, 146);
+    color: white;
+  }
+  .del-button:hover{
+   background: rgb(255, 84, 84);
+  }
+  .edit-button{
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    padding: 1rem;
+    border: none;
+    border-radius: 50%;
+    background: rgb(194, 194, 255);
+    color: white;
+  }
+  .edit-button:hover{
+   background: rgb(127, 127, 255);
+  }
+  .coffee-order-btn button span{
+    position: absolute;
+    transform: translateX(50%);
+    /* transform: translateY(50%); */
+    bottom: 25%;
+    right: 50%;
+  }
 </style>
 
 <script>
 export default {
   data () {
     return {
+      order: {
+        orderList: [],
+        orderTotal: 0
+      },
       coffeeCheck: {
         name: '',
         price: 0,
@@ -259,7 +353,7 @@ export default {
   },
   computed: {
     totalPrice: function () {
-      return (this.coffeeCheck.price * this.coffeeCheck.count) + this.coffeeCheck.sizeCheck.sizeCount
+      return (this.coffeeCheck.price + this.coffeeCheck.sizeCheck.sizeCount) * this.coffeeCheck.count
     }
   },
   methods: {
@@ -287,7 +381,10 @@ export default {
         note: ''
       }
     },
-    checkSelete: function () {
+    checkSelete: function (item) {
+      const orderItem = { ...item }
+      orderItem.totalPrice = this.totalPrice
+      this.order.orderList.push(orderItem)
       this.cancelSelete()
       console.log('push')
     },
@@ -296,6 +393,15 @@ export default {
         this.coffeeCheck.count += 1
       } else {
         this.coffeeCheck.count -= 1
+      }
+    },
+    delOrder: function (key) {
+      alert('確定要刪除嗎?')
+    },
+    cancelOrder: function () {
+      this.order = {
+        orderList: [],
+        orderTotal: 0
       }
     }
   }
