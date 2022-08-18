@@ -30,7 +30,7 @@
         </div>
       </div>
       <div>
-        <p>總計：{{this.orderItem.totalPrice}}</p>
+        <p style="text-align: center; margin-bottom: 2rem;">總計：{{this.orderItem.totalPrice}} 元</p>
       </div>
       <div>
         <button class="button-green" @click = cancelEditOrderList >取消</button>

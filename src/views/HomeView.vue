@@ -6,6 +6,9 @@
     <div :class=" this.editModelToggle ? 'open' : 'close' ">
       <OrderEditModel @close-edit-model='closeEditModel' @edit-model='editOrder' :editItem="editItem" />
     </div>
+    <div style="padding-top: 2rem;">
+      <NavbarPage />
+    </div>
     <div>
       <div class="bg">
         <h2 class="coffee-title">咖啡菜單</h2>
@@ -71,6 +74,7 @@
               </div>
             </li>
           </ul>
+          <div style="margin: 2rem 0; font-size: 18px">總計：{{orderTotalPrice}} 元</div>
           <div>
             <button @click="cancelOrder()" class="button-red">取消全部</button>
             <button class="button-green">送出訂單</button>
@@ -264,11 +268,13 @@
 <script>
 import OrderDelModel from '../components/OrderDelModel.vue'
 import OrderEditModel from '../components/OrderEditModel.vue'
+import NavbarPage from '../components/NavbarPage.vue'
 
 export default {
   components: {
     OrderDelModel,
-    OrderEditModel
+    OrderEditModel,
+    NavbarPage
   },
   data () {
     return {
@@ -378,6 +384,10 @@ export default {
   computed: {
     totalPrice: function () {
       return (this.coffeeCheck.price + this.coffeeCheck.sizeCheck.sizeCount) * this.coffeeCheck.count
+    },
+    orderTotalPrice: function () {
+      const total = this.order.orderList.reduce((pre, cur) => pre + cur.totalPrice, 0)
+      return total
     }
   },
   methods: {
@@ -444,9 +454,8 @@ export default {
     editOrder (editItem) {
       this.editModelToggle = !this.editModelToggle
       console.log(editItem)
-      this.order.orderList.splice(this.editOrderNumbe, 1, editItem)
+      this.order.orderList.splice(this.editOrderNumber, 1, editItem)
       this.editItem = {}
-      this.editOrderNumber = Number
     },
     cancelOrder: function () {
       this.order = {
