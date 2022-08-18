@@ -13,8 +13,9 @@
 <style>
   .model-bg {
     width: 100vw;
-    height: 100vh;
-    position: absolute;
+    height: 100%;
+    z-index: 10;
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;

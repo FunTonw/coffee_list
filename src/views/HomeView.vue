@@ -3,6 +3,9 @@
     <div :class=" this.modelToggle ? 'open' : 'close' ">
       <OrderDelModel @close-model='closeModel' @del-model='delOrder' />
     </div>
+    <div :class=" this.editModelToggle ? 'open' : 'close' ">
+      <OrderEditModel @close-edit-model='closeEditModel' @edit-model='editOrder' :editItem="editItem" />
+    </div>
     <div>
       <div class="bg">
         <h2 class="coffee-title">咖啡菜單</h2>
@@ -58,7 +61,7 @@
                   <button class="del-button" @click="openDelModel(key)">
                     <span>X</span>
                   </button>
-                  <button class="edit-button">
+                  <button class="edit-button" @click="openEditModel (order, key)">
                     <span>≡</span>
                   </button>
                 </div>
@@ -260,15 +263,20 @@
 
 <script>
 import OrderDelModel from '../components/OrderDelModel.vue'
+import OrderEditModel from '../components/OrderEditModel.vue'
 
 export default {
   components: {
-    OrderDelModel
+    OrderDelModel,
+    OrderEditModel
   },
   data () {
     return {
+      editModelToggle: false,
       modelToggle: false,
       delOrderNumber: Number,
+      editOrderNumber: Number,
+      editItem: {},
       order: {
         orderList: [],
         orderTotal: 0
@@ -413,14 +421,32 @@ export default {
     openDelModel (key) {
       this.modelToggle = !this.modelToggle
       this.delOrderNumber = key
-      console.log(this.delOrderNumber)
     },
     closeModel () {
       this.modelToggle = !this.modelToggle
+      this.delOrderNumber = Number
     },
     delOrder () {
       this.modelToggle = !this.modelToggle
       this.order.orderList.splice(this.delOrderNumber, 1)
+      this.delOrderNumber = Number
+    },
+    openEditModel (order, key) {
+      this.editModelToggle = !this.editModelToggle
+      this.editItem = { ...order }
+      this.editOrderNumber = key
+    },
+    closeEditModel () {
+      this.editModelToggle = !this.editModelToggle
+      this.editItem = {}
+      this.editOrderNumber = Number
+    },
+    editOrder (editItem) {
+      this.editModelToggle = !this.editModelToggle
+      console.log(editItem)
+      this.order.orderList.splice(this.editOrderNumbe, 1, editItem)
+      this.editItem = {}
+      this.editOrderNumber = Number
     },
     cancelOrder: function () {
       this.order = {
