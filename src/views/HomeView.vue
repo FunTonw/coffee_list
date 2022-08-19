@@ -1,15 +1,20 @@
 <template>
-  <div class="home">
+  <div class="">
+    <div class="model-relative">
     <div :class=" this.modelToggle ? 'open' : 'close' ">
       <OrderDelModel @close-model='closeModel' @del-model='delOrder' />
     </div>
     <div :class=" this.editModelToggle ? 'open' : 'close' ">
       <OrderEditModel @close-edit-model='closeEditModel' @edit-model='editOrder' :editItem="editItem" />
     </div>
-    <div style="padding-top: 2rem;">
-      <NavbarPage />
+    <div :class=" this.ListEditModelToggle ? 'open' : 'close' ">
+      <ListEditModel :listProp="editList"
+      @cansel-list-edit='cancelListEdit'
+      @fin-list-edit="finListEdit"
+      @del-list-edit="delListEdit"/>
     </div>
-    <div>
+    </div>
+    <div class="home">
       <div class="bg">
         <h2 class="coffee-title">咖啡菜單</h2>
         <div class="coffee-product">
@@ -77,9 +82,12 @@
           <div style="margin: 2rem 0; font-size: 18px">總計：{{orderTotalPrice}} 元</div>
           <div>
             <button @click="cancelOrder()" class="button-red">取消全部</button>
-            <button class="button-green">送出訂單</button>
+            <button @click="sendOrder()" class="button-green">送出訂單</button>
           </div>
         </div>
+      </div>
+      <div>
+        <ListView :listProp="listProp" @pay-toggle="getPayToggle" @edit-list-toggle="editListToggle"/>
       </div>
     </div>
   </div>
@@ -89,16 +97,20 @@
   body{
     background: rgb(180, 129, 71);
   }
-  .home{
+  .model-relative{
     position: relative;
+  }
+  .home{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
   .bg{
     background: white;
-    max-width: 35%;
-    margin: 0px auto;
+    max-width: 100%;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    border-radius: 0 0 1rem 1rem ;
+    margin: 2rem;
+    border-radius:1rem 1rem ;
   }
   .coffee-title{
     margin-bottom: 20px;
@@ -268,16 +280,24 @@
 <script>
 import OrderDelModel from '../components/OrderDelModel.vue'
 import OrderEditModel from '../components/OrderEditModel.vue'
-import NavbarPage from '../components/NavbarPage.vue'
+import ListEditModel from '../components/ListEditModel.vue'
+import ListView from '../components/ListView.vue'
 
 export default {
   components: {
     OrderDelModel,
     OrderEditModel,
-    NavbarPage
+    ListView,
+    ListEditModel
   },
   data () {
     return {
+      listProp: {
+        ListData: []
+      },
+      editList: {},
+      ListEditNumber: null,
+      ListEditModelToggle: false,
       editModelToggle: false,
       modelToggle: false,
       delOrderNumber: Number,
@@ -285,7 +305,8 @@ export default {
       editItem: {},
       order: {
         orderList: [],
-        orderTotal: 0
+        orderTotal: 0,
+        payToggle: false
       },
       coffeeCheck: {
         name: '',
@@ -457,11 +478,45 @@ export default {
       this.order.orderList.splice(this.editOrderNumber, 1, editItem)
       this.editItem = {}
     },
+    sendOrder () {
+      this.listProp.ListData.unshift(this.order)
+      this.order.orderTotal = this.orderTotalPrice
+      this.order = {
+        orderList: [],
+        orderTotal: 0,
+        payToggle: false
+      }
+    },
     cancelOrder: function () {
       this.order = {
         orderList: [],
         orderTotal: 0
       }
+    },
+    getPayToggle (key) {
+      this.listProp.ListData[key].payToggle = !this.listProp.ListData[key].payToggle
+    },
+    editListToggle (order, key) {
+      this.ListEditModelToggle = !this.ListEditModelToggle
+      this.editList = JSON.parse(JSON.stringify(order))
+      this.ListEditNumber = key
+    },
+    cancelListEdit () {
+      this.ListEditModelToggle = !this.ListEditModelToggle
+      this.editList = {}
+      this.ListEditNumber = Number
+    },
+    finListEdit (list) {
+      this.ListEditModelToggle = !this.ListEditModelToggle
+      this.listProp.ListData.splice(this.ListEditNumber, 1, list)
+      this.editList = {}
+      this.ListEditNumber = Number
+    },
+    delListEdit () {
+      this.ListEditModelToggle = !this.ListEditModelToggle
+      this.listProp.ListData.splice(this.ListEditNumber, 1)
+      this.editList = {}
+      this.ListEditNumber = Number
     }
   }
 }

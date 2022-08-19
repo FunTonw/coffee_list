@@ -88,7 +88,6 @@ export default {
   props: ['editItem'],
   data () {
     return {
-      // 明天將這邊綁v-model 改完後 用emit傳回homepage 用那邊的function 替代原本的陣列
       orderItem: {}
     }
   },

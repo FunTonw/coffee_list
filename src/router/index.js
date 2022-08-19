@@ -6,11 +6,6 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
-  },
-  {
-    path: '/list',
-    name: 'list',
-    component: () => import('../views/ListView.vue')
   }
 ]
 
