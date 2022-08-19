@@ -112,6 +112,11 @@
     margin: 2rem;
     border-radius:1rem 1rem ;
   }
+  @media screen and (max-width:768px) {
+    .home{
+      grid-template-columns: 1fr;
+    }
+  }
   .coffee-title{
     margin-bottom: 20px;
   }
